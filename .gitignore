@@ -1,0 +1,17 @@
+# Python 垃圾文件
+__pycache__/
+*.py[cod]
+
+# 虚拟环境 (绝对不能传!)
+.venv/
+venv/
+ENV/
+
+# 打包生成的文件
+dist/
+build/
+*.spec
+
+# IDE 配置 (看个人喜好，通常建议忽略)
+.vscode/
+.idea/
