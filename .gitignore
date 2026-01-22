@@ -15,3 +15,7 @@ build/
 # IDE 配置 (看个人喜好，通常建议忽略)
 .vscode/
 .idea/
+
+runs/
+__pycache__/
+*.pt
