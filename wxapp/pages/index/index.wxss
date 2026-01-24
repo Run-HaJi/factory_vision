@@ -16,3 +16,36 @@
   50% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
+
+/* 🔥 新增样式 */
+.log-container {
+  margin-top: 60rpx;
+  width: 100%;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
+
+.log-title {
+  font-size: 28rpx;
+  color: #888;
+  margin-bottom: 20rpx;
+  text-align: left;
+}
+
+.log-list {
+  height: 500rpx; /* 限制高度，超出滚动 */
+  background: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+.log-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #eee;
+  font-size: 28rpx;
+}
+
+.log-time { color: #666; }
+.log-obj { font-weight: bold; color: #333; }
+.log-conf { color: #ff4d4f; }

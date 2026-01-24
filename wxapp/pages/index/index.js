@@ -4,11 +4,13 @@ Page({
     statusText: "等待连接...",
     isAlarm: false,
     targetName: "",
-    confidence: ""
+    confidence: "",
+    historyLogs: [] // 🔥 新增：用来存历史记录
   },
 
   onLoad: function () {
     this.connectSocket();
+    this.fetchHistory(); // 🔥 启动时先拉取一次历史
   },
 
   onUnload: function() {
@@ -46,6 +48,9 @@ Page({
           confidence: data.conf
         });
 
+        // 🔥 2. 关键补丁：收到报警的同时，立刻刷新列表！
+        that.fetchHistory();
+        
         // 震动一下手机 (真机体验极佳)
         wx.vibrateLong();
 
@@ -64,6 +69,30 @@ Page({
     wx.onSocketError(function(err){
       console.error("连接失败", err);
       that.setData({ statusText: "连接失败" });
+    });
+  },
+
+  // 🔥 新增：从后端 API 获取历史记录
+  fetchHistory: function() {
+    const that = this;
+    // ⚠️ 替换成你的电脑 IP
+    const apiUrl = "http://192.168.219.78:8000/history"; 
+
+    wx.request({
+      url: apiUrl,
+      method: 'GET',
+      success(res) {
+        console.log("历史记录获取成功:", res.data);
+        // 简单处理一下时间，只显示 HH:MM:SS
+        const logs = res.data.map(item => {
+          item.shortTime = item.timestamp.substring(11, 19);
+          return item;
+        });
+        that.setData({ historyLogs: logs });
+      },
+      fail(err) {
+        console.error("历史记录获取失败", err);
+      }
     });
   }
 });
