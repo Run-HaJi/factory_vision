@@ -1,4 +1,4 @@
-# 🏭 Factory Vision 2.0 - Industrial IoT Real-time Monitoring System
+# 🏭 Factory Vision V2.0 - Industrial IoT Real-time Monitoring System
 
 > 基于边缘计算的工业视觉实时监控系统原型。集成 YOLOv8 目标检测、FastAPI 异步服务、WebSocket 实时通信与微信小程序移动端。
 
