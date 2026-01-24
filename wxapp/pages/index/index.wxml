@@ -1,27 +1,35 @@
 <view class="container">
   <view class="status-box {{isAlarm ? 'alarm' : 'normal'}}">
+    <icon type="{{isAlarm ? 'warn' : 'success'}}" size="50" color="white"/>
     <text class="status-text">{{statusText}}</text>
   </view>
   
-  <view class="info" wx:if="{{isAlarm}}">
-    <text>检测目标: {{targetName}}</text>
-    <text>置信度: {{confidence}}</text>
-  </view>
+  <block wx:if="{{isAlarm}}">
+    <view class="info">
+      <text>🎯 检测目标: {{targetName}}</text>
+      <text>📊 置信度: {{confidence}}</text>
+    </view>
 
-  <button class="btn" bindtap="connectSocket">重连服务器</button>
-</view>
-
-<button class="btn" bindtap="connectSocket">重连服务器</button>
-
-<view class="log-container">
-  <view class="log-title">🛡️ 报警历史 (最近50条)</view>
-  <scroll-view scroll-y="true" class="log-list">
-    <block wx:for="{{historyLogs}}" wx:key="id">
-      <view class="log-item">
-        <text class="log-time">{{item.shortTime}}</text>
-        <text class="log-obj">{{item.object_class}}</text>
-        <text class="log-conf">置信度: {{item.confidence}}</text>
+    <block wx:if="{{alertImage}}">
+      <view class="evidence-box">
+        <text class="evidence-title">📸 现场抓拍证据</text>
+        <image src="{{alertImage}}" mode="widthFix" class="evidence-img"></image>
       </view>
     </block>
-  </scroll-view>
+  </block>
+
+  <button class="btn" bindtap="connectSocket">🔄 重连服务器</button>
+
+  <view class="log-container">
+    <view class="log-title">🛡️ 报警历史 (最近50条)</view>
+    <scroll-view scroll-y="true" class="log-list">
+      <block wx:for="{{historyLogs}}" wx:key="id">
+        <view class="log-item">
+          <text class="log-time">{{item.shortTime}}</text>
+          <text class="log-obj">{{item.object_class}}</text>
+          <text class="log-conf">conf: {{item.confidence}}</text>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
 </view>

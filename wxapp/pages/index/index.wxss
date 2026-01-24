@@ -1,15 +1,36 @@
-/* index.wxss */
-.container { padding: 50rpx; text-align: center; }
+/* ================= 1. 基础容器与状态球 ================= */
+.container { 
+  padding: 50rpx; 
+  text-align: center; 
+}
+
 .status-box {
-  width: 400rpx; height: 400rpx; border-radius: 50%;
-  margin: 50rpx auto; display: flex; align-items: center; justify-content: center;
+  width: 400rpx; 
+  height: 400rpx; 
+  border-radius: 50%;
+  margin: 20rpx auto; /* 稍微调小一点下边距，给下面腾位置 */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
   transition: all 0.3s;
 }
-.normal { background-color: #07c160; box-shadow: 0 0 20rpx #07c160; }
-.alarm { background-color: #ff4d4f; box-shadow: 0 0 50rpx #ff4d4f; animation: pulse 1s infinite; }
-.status-text { color: white; font-size: 40rpx; font-weight: bold; }
-.info { display: flex; flex-direction: column; font-size: 32rpx; margin-top: 20rpx; }
-.btn { margin-top: 100rpx; }
+
+.normal { 
+  background-color: #07c160; 
+  box-shadow: 0 0 20rpx #07c160; 
+}
+
+.alarm { 
+  background-color: #ff4d4f; 
+  box-shadow: 0 0 50rpx #ff4d4f; 
+  animation: pulse 1s infinite; 
+}
+
+.status-text { 
+  color: white; 
+  font-size: 40rpx; 
+  font-weight: bold; 
+}
 
 @keyframes pulse {
   0% { transform: scale(1); }
@@ -17,11 +38,55 @@
   100% { transform: scale(1); }
 }
 
-/* 🔥 新增样式 */
+/* ================= 2. 报警详情文字 ================= */
+.info { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; /* 确保文字居中 */
+  font-size: 32rpx; 
+  font-weight: bold;
+  color: #333;
+  margin-top: 20rpx; 
+}
+
+/* ================= 3. 🔥 新增：证据图片样式 ================= */
+.evidence-box {
+  margin-top: 30rpx;
+  width: 100%;
+  padding: 20rpx;
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
+  text-align: center;
+  box-sizing: border-box; /* 关键：防止 padding 撑大盒子 */
+}
+
+.evidence-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #ff4d4f; /* 红色标题更醒目 */
+  margin-bottom: 15rpx;
+}
+
+.evidence-img {
+  width: 100%;
+  border-radius: 8rpx;
+  border: 2rpx solid #ff4d4f; /* 红框 */
+  display: block; /* 消除图片底部的微小空隙 */
+}
+
+/* ================= 4. 按钮 ================= */
+.btn { 
+  margin-top: 40rpx; /* 稍微缩减间距 */
+  width: 80%;
+}
+
+/* ================= 5. 历史记录列表 ================= */
 .log-container {
   margin-top: 60rpx;
   width: 100%;
-  padding: 0 40rpx;
+  /* padding: 0 40rpx;  这里去掉，因为 container 已经有 padding 了 */
   box-sizing: border-box;
 }
 
@@ -33,7 +98,7 @@
 }
 
 .log-list {
-  height: 500rpx; /* 限制高度，超出滚动 */
+  height: 400rpx; /* 稍微改短一点，防止小屏幕手机还要滚很远 */
   background: #f8f8f8;
   border-radius: 12rpx;
 }
@@ -43,7 +108,7 @@
   justify-content: space-between;
   padding: 20rpx;
   border-bottom: 1rpx solid #eee;
-  font-size: 28rpx;
+  font-size: 26rpx; /* 字体稍微改小一点点，更精致 */
 }
 
 .log-time { color: #666; }

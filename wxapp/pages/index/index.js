@@ -1,11 +1,17 @@
 // index.js
+const SERVER_IP = "192.168.219.78:8000"; 
+const wsUrl = `ws://${SERVER_IP}/ws`;
+const apiUrl = `http://${SERVER_IP}/history`;
+const staticBaseUrl = `http://${SERVER_IP}`; // 用于拼接图片地址
+
 Page({
   data: {
     statusText: "等待连接...",
     isAlarm: false,
     targetName: "",
     confidence: "",
-    historyLogs: [] // 🔥 新增：用来存历史记录
+    alertImage: "",  // 🔥 新增：用于显示报警图片
+    historyLogs: []
   },
 
   onLoad: function () {
@@ -36,28 +42,24 @@ Page({
     });
 
     wx.onSocketMessage(function (res) {
-      console.log("收到消息:", res.data);
       const data = JSON.parse(res.data);
-
       if (data.type === 'detection_alert') {
-        // 收到报警！变红！
         that.setData({
           statusText: "⚠️ 发现目标！",
           isAlarm: true,
           targetName: data.top_object,
-          confidence: data.conf
+          confidence: data.conf,
+          // 🔥 拼接实时图片地址
+          alertImage: staticBaseUrl + data.image_url 
         });
 
-        // 🔥 2. 关键补丁：收到报警的同时，立刻刷新列表！
-        that.fetchHistory();
-        
-        // 震动一下手机 (真机体验极佳)
+        that.fetchHistory(); 
         wx.vibrateLong();
 
-        // 3秒后自动恢复正常
+        // 5秒后恢复 (时间加长点，不然图片还没看清就没了)
         setTimeout(() => {
-          that.setData({ statusText: "监控正常", isAlarm: false });
-        }, 3000);
+          that.setData({ statusText: "监控正常", isAlarm: false, alertImage: "" });
+        }, 5000);
       }
     });
 
@@ -72,26 +74,21 @@ Page({
     });
   },
 
-  // 🔥 新增：从后端 API 获取历史记录
   fetchHistory: function() {
     const that = this;
-    // ⚠️ 替换成你的电脑 IP
-    const apiUrl = "http://192.168.219.78:8000/history"; 
-
     wx.request({
       url: apiUrl,
       method: 'GET',
       success(res) {
-        console.log("历史记录获取成功:", res.data);
-        // 简单处理一下时间，只显示 HH:MM:SS
         const logs = res.data.map(item => {
           item.shortTime = item.timestamp.substring(11, 19);
+          // 如果数据库里有图片路径，就拼接完整
+          if (item.image_url) {
+            item.fullImageUrl = staticBaseUrl + item.image_url;
+          }
           return item;
         });
         that.setData({ historyLogs: logs });
-      },
-      fail(err) {
-        console.error("历史记录获取失败", err);
       }
     });
   }

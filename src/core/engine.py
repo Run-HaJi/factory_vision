@@ -18,32 +18,42 @@ class AIEngine:
             print(f"❌ [Core] 模型加载失败: {e}")
             raise e
 
-    def predict(self, image_bytes: bytes, conf_threshold: float = 0.25):
-        """
-        核心推理函数
-        :param image_bytes: 图片二进制数据
-        :param conf_threshold: 置信度阈值
-        :return: 格式化后的检测结果列表
-        """
-        # 1. 图像预处理 (Bytes -> OpenCV Image)
-        nparr = np.frombuffer(image_bytes, np.uint8)
-        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
+    def predict(self, image_data, conf_threshold=0.25):
+        # 🔥 V2.0 核心升级：智能兼容层
+        # 既支持 raw bytes (来自旧接口)，也支持 numpy array (来自新绘图接口)
+        
+        img = None
+        
+        # 1. 智能解析
+        if isinstance(image_data, np.ndarray):
+            # 如果已经是 numpy 数组 (OpenCV 图)，直接用
+            img = image_data
+        elif isinstance(image_data, bytes):
+            # 如果是字节流，解码成图片
+            nparr = np.frombuffer(image_data, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+        # 2. 安全检查
         if img is None:
             raise ValueError("无法解析图像数据")
 
-        # 2. 模型推理
+        # 3. 推理 (Inference)
         results = self.model(img, conf=conf_threshold)
-
-        # 3. 结果格式化 (清洗数据，只返回纯净的 Python 对象)
+        
+        # 4. 结果格式化
         detections = []
-        for result in results:
-            boxes = result.boxes
-            for box in boxes:
+        for r in results:
+            for box in r.boxes:
+                # 获取类别 ID 和 名称
+                cls_id = int(box.cls[0])
+                cls_name = self.model.names[cls_id]
+                conf = float(box.conf[0])
+                
+                # 封装结果
                 detections.append({
-                    "class": self.model.names[int(box.cls[0])],
-                    "confidence": round(float(box.conf[0]), 2),
-                    "bbox": box.xyxy[0].tolist()
+                    "class": cls_name,
+                    "confidence": round(conf, 2),
+                    "box": box.xyxy[0].tolist() # 坐标，虽然前端还没用，先存着
                 })
         
         return detections
