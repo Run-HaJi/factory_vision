@@ -1,0 +1,12 @@
+<view class="container">
+  <view class="status-box {{isAlarm ? 'alarm' : 'normal'}}">
+    <text class="status-text">{{statusText}}</text>
+  </view>
+  
+  <view class="info" wx:if="{{isAlarm}}">
+    <text>检测目标: {{targetName}}</text>
+    <text>置信度: {{confidence}}</text>
+  </view>
+
+  <button class="btn" bindtap="connectSocket">重连服务器</button>
+</view>
