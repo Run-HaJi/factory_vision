@@ -1,13 +1,11 @@
-# 1. 数据的绝对路径 (一定要改成你的实际路径)
+# 1. 数据的绝对路径 (保持不变)
 path: C:/Users/LJR/factory_vision/datasets
 
-# 2. 训练集和验证集图片的位置 (相对于 path)
-# 咱们偷个懒，训练和验证都用同一份数据 (为了快速跑通流程)
-train: images
-val: images
+# 2. 修改这里：同时读取两个文件夹的数据！
+train: [images, aug_images]
+val:   [images, aug_images]
 
-# 3. 类别名称 (Key 必须是从 0 开始的数字)
-# 0 对应你 MakeSense 里第一个加的标签，1 是第二个
+# 3. 类别名称 (保持不变)
 names:
   0: earbud
   1: case

@@ -1,21 +1,24 @@
-# Python 垃圾文件
-__pycache__/
-*.py[cod]
-
-# 虚拟环境 (绝对不能传!)
+# 忽略虚拟环境
 .venv/
 venv/
-ENV/
+env/
 
-# 打包生成的文件
+# 忽略临时文件
+__pycache__/
+*.pyc
+.DS_Store
+
+# 忽略打包生成的文件
 dist/
 build/
 *.spec
 
-# IDE 配置 (看个人喜好，通常建议忽略)
-.vscode/
-.idea/
+# 忽略数据集 (太大了，一般不传 git)
+datasets/
 
+# 忽略训练过程日志 (runs 文件夹很大，建议忽略，只保留模型文件)
 runs/
-__pycache__/
 *.pt
+
+# 忽略 VS Code 配置
+.vscode/
