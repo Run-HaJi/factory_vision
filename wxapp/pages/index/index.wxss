@@ -114,3 +114,8 @@
 .log-time { color: #666; }
 .log-obj { font-weight: bold; color: #333; }
 .log-conf { color: #ff4d4f; }
+
+/* 点击时的按压反馈 */
+.log-item-hover {
+  background-color: #e6e6e6;
+}

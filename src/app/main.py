@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 from sqlmodel import Field, Session, SQLModel, create_engine, select
 
@@ -16,7 +16,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select
 # ===========================
 class DetectionLog(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.utcnow() + timedelta(hours=8))
     object_class: str
     confidence: float
     image_url: str = Field(default="")  # 🔥 新增：存图片的相对路径
@@ -155,4 +155,9 @@ async def predict_endpoint(file: UploadFile = File(...)):
             "image_url": image_relative_url  # 发过去！
         })
 
-    return {"count": len(results)}
+    # 找到最后这一段，替换掉原来的 return {"count": len(results)}
+    return {
+        "filename": file.filename,
+        "count": len(results),
+        "detections": results  # 🔥 补上这个，client.py 就不会崩了
+    }

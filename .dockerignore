@@ -1,0 +1,22 @@
+# Git 仓库数据
+.git
+.gitignore
+
+# 虚拟环境 (Docker 里会自己装 Python 环境，不需要你本地的)
+.venv/
+venv/
+env/
+
+# 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+
+# 本地运行时数据
+factory_logs.db
+static/images/
+inspection_report.csv
+logs/
+
+# VS Code 配置
+.vscode/

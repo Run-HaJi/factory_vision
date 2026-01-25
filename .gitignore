@@ -22,3 +22,20 @@ runs/
 
 # 忽略 VS Code 配置
 .vscode/
+
+# --- 运行时数据屏蔽 ---
+# 忽略 SQLite 数据库 (每个人应该有自己的库)
+*.db
+*.db-wal
+*.db-shm
+
+# 忽略生成的检测图片文件夹
+static/images/
+
+# 忽略 Excel/CSV 报表
+*.csv
+*.xlsx
+
+# --- 系统配置屏蔽 ---
+# 忽略那个救命的 WSL 配置文件 (这是你本地独有的)
+.wslconfig

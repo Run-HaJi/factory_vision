@@ -24,9 +24,17 @@
     <view class="log-title">🛡️ 报警历史 (最近50条)</view>
     <scroll-view scroll-y="true" class="log-list">
       <block wx:for="{{historyLogs}}" wx:key="id">
-        <view class="log-item">
+        <view class="log-item" 
+              bindtap="viewEvidence" 
+              data-url="{{item.fullImageUrl}}" 
+              hover-class="log-item-hover">
+      
           <text class="log-time">{{item.shortTime}}</text>
-          <text class="log-obj">{{item.object_class}}</text>
+  
+          <text class="log-obj">
+            {{item.object_class}} <text wx:if="{{item.fullImageUrl}}">📷</text>
+          </text>
+  
           <text class="log-conf">conf: {{item.confidence}}</text>
         </view>
       </block>

@@ -1,8 +1,11 @@
 // index.js
+
+// 🔥【核心配置】以后只改这里！会自动应用到下面所有链接
 const SERVER_IP = "192.168.219.78:8000"; 
+
 const wsUrl = `ws://${SERVER_IP}/ws`;
 const apiUrl = `http://${SERVER_IP}/history`;
-const staticBaseUrl = `http://${SERVER_IP}`; // 用于拼接图片地址
+const staticBaseUrl = `http://${SERVER_IP}`; 
 
 Page({
   data: {
@@ -10,13 +13,13 @@ Page({
     isAlarm: false,
     targetName: "",
     confidence: "",
-    alertImage: "",  // 🔥 新增：用于显示报警图片
+    alertImage: "", 
     historyLogs: []
   },
 
   onLoad: function () {
     this.connectSocket();
-    this.fetchHistory(); // 🔥 启动时先拉取一次历史
+    this.fetchHistory(); 
   },
 
   onUnload: function() {
@@ -25,13 +28,12 @@ Page({
 
   connectSocket: function () {
     const that = this;
-    // ⚠️ 把这里换成你的电脑 IP！！！
-    const wsUrl = "ws://192.168.219.78:8000/ws"; 
-
+    
+    // 这里的 url 已经自动使用了上面的 SERVER_IP，不用手动改了
     wx.connectSocket({
       url: wsUrl,
       success: () => {
-        console.log("正在连接...");
+        console.log("正在连接...", wsUrl);
         that.setData({ statusText: "连接中..." });
       }
     });
@@ -42,24 +44,36 @@ Page({
     });
 
     wx.onSocketMessage(function (res) {
-      const data = JSON.parse(res.data);
-      if (data.type === 'detection_alert') {
-        that.setData({
-          statusText: "⚠️ 发现目标！",
-          isAlarm: true,
-          targetName: data.top_object,
-          confidence: data.conf,
-          // 🔥 拼接实时图片地址
-          alertImage: staticBaseUrl + data.image_url 
-        });
+      // 加上 try-catch 防止解析非 JSON 数据报错
+      try {
+        const data = JSON.parse(res.data);
+        console.log("收到服务端消息:", data);
 
-        that.fetchHistory(); 
-        wx.vibrateLong();
+        // 只要有检测结果，就视为报警 (兼容性更强)
+        if (data.type === 'detection_alert' || data.detections) {
+          that.setData({
+            statusText: "⚠️ 发现目标！",
+            isAlarm: true,
+            targetName: data.top_object || "未知目标",
+            confidence: data.conf || "0.0",
+            alertImage: staticBaseUrl + data.image_url 
+          });
 
-        // 5秒后恢复 (时间加长点，不然图片还没看清就没了)
-        setTimeout(() => {
-          that.setData({ statusText: "监控正常", isAlarm: false, alertImage: "" });
-        }, 5000);
+          wx.vibrateLong();
+
+          // 🔥🔥【关键修改】延迟 300ms 再拉取，等待数据库写入完成 🔥🔥
+          setTimeout(() => {
+             console.log("🔄 触发列表刷新...");
+             that.fetchHistory(); 
+          }, 300);
+
+          // 5秒后恢复监控状态
+          setTimeout(() => {
+            that.setData({ statusText: "监控正常", isAlarm: false, alertImage: "" });
+          }, 5000);
+        }
+      } catch (e) {
+        console.error("解析消息失败:", e);
       }
     });
 
@@ -76,20 +90,48 @@ Page({
 
   fetchHistory: function() {
     const that = this;
+    // 🔥 给 URL 加个随机时间戳，强制微信不使用缓存，每次都去服务器拿最新的
+    const noCacheUrl = `${apiUrl}?t=${Date.now()}`;
+
     wx.request({
-      url: apiUrl,
+      url: noCacheUrl,
       method: 'GET',
       success(res) {
+        console.log("📜 历史记录已更新，共", res.data.length, "条");
         const logs = res.data.map(item => {
-          item.shortTime = item.timestamp.substring(11, 19);
-          // 如果数据库里有图片路径，就拼接完整
+          // 简单的防崩溃处理
+          if(item.timestamp) {
+             item.shortTime = item.timestamp.substring(11, 19);
+          } else {
+             item.shortTime = "--:--:--";
+          }
+          
           if (item.image_url) {
             item.fullImageUrl = staticBaseUrl + item.image_url;
           }
           return item;
         });
         that.setData({ historyLogs: logs });
+      },
+      fail(err) {
+        console.error("拉取历史失败:", err);
       }
     });
+  },
+
+  viewEvidence: function(e) {
+    const imgUrl = e.currentTarget.dataset.url;
+    if (imgUrl) {
+      console.log("正在查看证据:", imgUrl);
+      wx.previewImage({
+        current: imgUrl, 
+        urls: [imgUrl] 
+      });
+    } else {
+      wx.showToast({
+        title: '该记录无现场画面',
+        icon: 'none'
+      });
+    }
   }
 });
