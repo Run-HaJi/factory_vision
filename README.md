@@ -139,8 +139,10 @@ docker run -it --name factory-rtsp \
 
 **Lead Developer**: Run-Haji
   * *Role*: Architecture Design, Core Implementation, Hardware Integration
+
 **AI Co-pilot**: Google Gemini 3.0 Pro
   * *Role*: Technical Consultant, Code Optimization, Debugging Partner
+
 **Status**: 🚀 V2.3 Stable Release
 
 ---
